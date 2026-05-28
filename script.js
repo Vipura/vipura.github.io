@@ -185,23 +185,53 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   });
 });
 
-// ===== CONTACT FORM (mailto) =====
+// ===== CONTACT FORM (Web3Forms) =====
 const contactForm = document.getElementById('contact-form');
 
 if (contactForm) {
-  contactForm.addEventListener('submit', (e) => {
+  contactForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const name = document.getElementById('form-name').value;
-    const email = document.getElementById('form-email').value;
-    const subject = document.getElementById('form-subject').value;
-    const message = document.getElementById('form-message').value;
+    const submitBtn = document.getElementById('form-submit-btn');
+    const statusEl = document.getElementById('form-status');
+    const originalBtnHTML = submitBtn.innerHTML;
 
-    const mailtoLink = `mailto:vipuradevnak@gmail.com?subject=${encodeURIComponent(subject || 'Portfolio Contact')}&body=${encodeURIComponent(
-      `Name: ${name}\nEmail: ${email}\n\n${message}`
-    )}`;
+    // Loading state
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = `
+      <svg class="spinner" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+      Sending...
+    `;
 
-    window.location.href = mailtoLink;
+    try {
+      const formData = new FormData(contactForm);
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: formData
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        statusEl.textContent = '✓ Message sent successfully! I\'ll get back to you soon.';
+        statusEl.className = 'form-status form-status-success';
+        contactForm.reset();
+      } else {
+        throw new Error(result.message || 'Something went wrong');
+      }
+    } catch (error) {
+      statusEl.textContent = '✗ Failed to send. Please try again or email me directly.';
+      statusEl.className = 'form-status form-status-error';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalBtnHTML;
+
+      // Auto-hide status after 6 seconds
+      setTimeout(() => {
+        statusEl.textContent = '';
+        statusEl.className = 'form-status';
+      }, 6000);
+    }
   });
 }
 
