@@ -274,3 +274,6 @@ if (timeline) {
   // Trigger once to set initial state
   window.dispatchEvent(new Event('scroll'));
 }
+
+// ===== INITIALIZE LUCIDE ICONS =====
+lucide.createIcons();
