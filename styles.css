@@ -511,6 +511,14 @@ ul, ol {
   border-bottom: 1px solid var(--border-subtle);
 }
 
+.navbar.menu-open {
+  transition: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: transparent !important;
+  border-bottom-color: transparent !important;
+}
+
 .navbar .container {
   display: flex;
   align-items: center;
@@ -518,6 +526,8 @@ ul, ol {
 }
 
 .nav-logo {
+  position: relative;
+  z-index: 1001;
   font-family: var(--font-heading);
   font-size: 1.35rem;
   font-weight: 700;
